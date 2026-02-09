@@ -17,7 +17,7 @@
             --text: #ffffff;
             --accent: #333333;
             --font-main: 'Inter', sans-serif;
-            --font-display: 'Playfair Display', serif; /* New Font Variable */
+            --font-display: 'Playfair Display', serif;
         }
 
         * {
@@ -158,11 +158,11 @@
             transform: scale(1.2);
         }
 
-        /* --- HORIZONTAL SECTION UPDATES --- */
+        /* --- HORIZONTAL SECTION --- */
         .horizontal-section {
             width: 100%;
             height: 100vh;
-            background: #080808; /* UNIFIED BACKGROUND COLOR */
+            background: #080808;
             overflow: hidden;
             display: flex;
         }
@@ -181,14 +181,14 @@
             padding: 50px;
             border-right: 1px solid #222;
             position: relative;
-            background: #080808; /* Ensuring all panels match */
+            background: #080808;
         }
         
         .h-number {
-            font-size: 25rem; /* Bigger Number */
+            font-size: 25rem;
             font-weight: 800;
             color: #fff;
-            opacity: 0.03; /* Lower opacity so it doesn't fight the text */
+            opacity: 0.03;
             position: absolute;
             z-index: 0;
             top: 50%;
@@ -202,31 +202,31 @@
             position: relative;
         }
         .h-title {
-            font-family: var(--font-display); /* Using Playfair Display */
+            font-family: var(--font-display);
             font-style: italic;
-            font-size: clamp(5rem, 12vw, 10rem); /* Much Bigger Title */
-            text-transform: capitalize; /* Changed to Capitalize for elegance */
+            font-size: clamp(5rem, 12vw, 10rem);
+            text-transform: capitalize;
             line-height: 1.1;
             margin-bottom: 30px;
-            color: #fff; /* Solid white for readability */
+            color: #fff;
         }
         .h-desc {
             font-family: var(--font-main);
-            font-size: clamp(1.2rem, 2vw, 2rem); /* Bigger description */
-            color: #d1d1d1; /* Brighter grey */
-            max-width: 800px; /* Wider text area */
+            font-size: clamp(1.2rem, 2vw, 2rem);
+            color: #d1d1d1;
+            max-width: 800px;
             margin: 0 auto;
             font-weight: 300;
         }
 
-        /* --- SKILLS STACKING CSS --- */
+        /* --- SKILLS STACKING CSS (FIXED) --- */
         .skills-section {
             width: 100%;
             background-color: #050505;
         }
         .stack-area {
             width: 100%;
-            height: 100vh;
+            height: 100dvh; /* FIX: Changed vh to dvh for mobile address bar */
             position: relative;
             display: flex;
             justify-content: center;
@@ -236,14 +236,13 @@
 
         .skill-card {
             width: 90vw;
-            height: 85vh;
+            height: 85dvh; /* FIX: Changed vh to dvh for mobile address bar */
             background: #111;
             border: 1px solid #333;
             border-radius: 30px;
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
             padding: 80px;
             display: flex;
             flex-direction: column;
@@ -331,7 +330,7 @@
             .skill-card { 
                 padding: 30px; 
                 width: 95vw;
-                height: 80vh;
+                height: 80dvh; /* FIX: consistent dvh */
             }
             .cursor { display: none; }
         }
@@ -508,14 +507,13 @@
             }
         });
         
-        // --- 5. STACKING ANIMATION (Extended) ---
+                // --- 5. STACKING ANIMATION (Final Desktop Fix) ---
         let cards = gsap.utils.toArray(".skill-card");
 
-        // Initial setup: Push cards down
-        cards.forEach((card, i) => {
-            if(i !== 0) {
-                gsap.set(card, { y: window.innerHeight });
-            }
+        // 1. Force GSAP to handle the centering (Fixes Desktop drift)
+        gsap.set(cards, { 
+            xPercent: -50, 
+            yPercent: -50 
         });
 
         let stackTimeline = gsap.timeline({
@@ -525,15 +523,18 @@
                 end: "+=5000", 
                 pin: true,
                 scrub: 1,
-                anticipatePin: 1
+                anticipatePin: 1,
+                invalidateOnRefresh: true
             }
         });
 
         cards.forEach((card, i) => {
             if (i === 0) return;
 
-            stackTimeline.to(card, {
-                y: 0,
+            stackTimeline.fromTo(card, {
+                y: () => window.innerHeight // Start from bottom of screen
+            }, {
+                y: 0, // Move to absolute center (0 offset)
                 duration: 1,
                 ease: "none"
             }, i * 1)
@@ -544,6 +545,7 @@
                 ease: "none"
             }, "<");
         });
+
 
     </script>
 </body>
